@@ -119,21 +119,24 @@ const Index = () => {
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex flex-col items-center justify-center bg-background">
+      <div className="min-h-screen flex flex-col items-center justify-center bg-gradient-to-br from-background via-primary/5 to-secondary/5">
         <div className="text-center space-y-8 px-4">
-          <div className="relative">
-            <div className="w-24 h-24 mx-auto rounded-full border-4 border-primary/20 border-t-primary animate-spin-slow" />
-            <Icon name="Shield" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-primary" size={40} />
+          <div className="relative animate-pulse-slow">
+            <div className="w-32 h-32 mx-auto rounded-full bg-gradient-to-br from-primary/30 to-secondary/30 blur-2xl absolute top-0 left-1/2 transform -translate-x-1/2 animate-glow" />
+            <div className="relative w-32 h-32 mx-auto rounded-full border-4 border-primary/20 border-t-primary border-r-secondary animate-spin-slow" />
+            <Icon name="Shield" className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 text-primary animate-pulse" size={48} />
           </div>
           <div className="space-y-4">
-            <h2 className="text-3xl font-bold gradient-text">AntiSherlok</h2>
-            <div className="w-64 h-2 bg-muted rounded-full overflow-hidden mx-auto">
+            <h2 className="text-4xl font-bold gradient-text animate-fade-in">AntiSherlok</h2>
+            <div className="w-80 h-3 bg-muted/50 rounded-full overflow-hidden mx-auto backdrop-blur-sm border border-primary/20">
               <div 
-                className="h-full gradient-primary transition-all duration-300"
+                className="h-full gradient-primary transition-all duration-500 ease-out relative overflow-hidden"
                 style={{ width: `${loadingProgress}%` }}
-              />
+              >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-shimmer" />
+              </div>
             </div>
-            <p className="text-muted-foreground">Загрузка {loadingProgress}%</p>
+            <p className="text-muted-foreground text-lg font-medium">Инициализация защиты... {loadingProgress}%</p>
           </div>
         </div>
       </div>
@@ -258,17 +261,17 @@ const Index = () => {
                 конфиденциальности и безопасности данных.
               </p>
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6">
-                <div className="text-center p-4 rounded-lg bg-primary/10">
+                <div className="text-center p-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 cursor-default">
                   <Icon name="Users" className="mx-auto mb-2 text-primary" size={32} />
                   <div className="text-2xl font-bold">{users}+</div>
                   <div className="text-sm">Защищённых пользователей</div>
                 </div>
-                <div className="text-center p-4 rounded-lg bg-secondary/10">
+                <div className="text-center p-4 rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-all duration-300 hover:shadow-lg hover:shadow-secondary/30 hover:scale-105 cursor-default">
                   <Icon name="ShieldCheck" className="mx-auto mb-2 text-secondary" size={32} />
                   <div className="text-2xl font-bold">{efficiency}%</div>
                   <div className="text-sm">Эффективность</div>
                 </div>
-                <div className="text-center p-4 rounded-lg bg-primary/10">
+                <div className="text-center p-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 cursor-default">
                   <Icon name="Clock" className="mx-auto mb-2 text-primary" size={32} />
                   <div className="text-2xl font-bold">24/7</div>
                   <div className="text-sm">Мониторинг</div>

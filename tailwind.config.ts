@@ -100,6 +100,14 @@ export default {
 				'spin-slow': {
 					'0%': { transform: 'rotate(0deg)' },
 					'100%': { transform: 'rotate(360deg)' }
+				},
+				'pulse-slow': {
+					'0%, 100%': { opacity: '1' },
+					'50%': { opacity: '0.8' }
+				},
+				'shimmer': {
+					'0%': { transform: 'translateX(-100%)' },
+					'100%': { transform: 'translateX(100%)' }
 				}
 			},
 			animation: {
@@ -108,7 +116,9 @@ export default {
 				'fade-in': 'fade-in 0.6s ease-out',
 				'slide-up': 'slide-up 0.8s ease-out',
 				'glow': 'glow 2s ease-in-out infinite',
-				'spin-slow': 'spin-slow 3s linear infinite'
+				'spin-slow': 'spin-slow 3s linear infinite',
+				'pulse-slow': 'pulse-slow 3s ease-in-out infinite',
+				'shimmer': 'shimmer 2s ease-in-out infinite'
 			}
 		}
 	},
