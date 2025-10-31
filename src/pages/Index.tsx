@@ -233,12 +233,12 @@ const Index = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6">
                 <div className="text-center p-4 rounded-lg bg-primary/10">
                   <Icon name="Users" className="mx-auto mb-2 text-primary" size={32} />
-                  <div className="text-2xl font-bold">10,000+</div>
+                  <div className="text-2xl font-bold">150+</div>
                   <div className="text-sm">Защищённых пользователей</div>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-secondary/10">
                   <Icon name="ShieldCheck" className="mx-auto mb-2 text-secondary" size={32} />
-                  <div className="text-2xl font-bold">99.9%</div>
+                  <div className="text-2xl font-bold">100%</div>
                   <div className="text-sm">Эффективность</div>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-primary/10">
