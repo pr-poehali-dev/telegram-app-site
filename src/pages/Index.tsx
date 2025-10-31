@@ -116,8 +116,9 @@ const Index = () => {
   const subscriptionPlans = [
     {
       name: '1 месяц',
-      price: '299₽',
+      price: '69₽',
       duration: 'месяц',
+      durationMonths: 1,
       features: [
         'Полная защита данных',
         'Мониторинг 24/7',
@@ -128,8 +129,9 @@ const Index = () => {
     },
     {
       name: '3 месяца',
-      price: '799₽',
+      price: '207₽',
       duration: '3 месяца',
+      durationMonths: 3,
       features: [
         'Полная защита данных',
         'Мониторинг 24/7',
@@ -141,8 +143,9 @@ const Index = () => {
     },
     {
       name: '6 месяцев',
-      price: '1499₽',
+      price: '414₽',
       duration: '6 месяцев',
+      durationMonths: 6,
       features: [
         'Полная защита данных',
         'Мониторинг 24/7',
@@ -150,6 +153,22 @@ const Index = () => {
         'VIP поддержка',
         'Расширенная аналитика',
         'Персональный менеджер'
+      ],
+      popular: false
+    },
+    {
+      name: '12 месяцев',
+      price: '828₽',
+      duration: '1 год',
+      durationMonths: 12,
+      features: [
+        'Полная защита данных',
+        'Мониторинг 24/7',
+        'Уведомления в реальном времени',
+        'VIP поддержка',
+        'Расширенная аналитика',
+        'Персональный менеджер',
+        'Максимальная выгода'
       ],
       popular: false
     }
@@ -165,9 +184,9 @@ const Index = () => {
         <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-secondary/20" />
         <div className="container mx-auto relative z-10">
           <div className="text-center space-y-6 animate-fade-in">
-            <Badge variant="outline" className="border-primary/50 text-primary">
-              <Icon name="Shield" size={16} className="mr-2" />
-              Защита от пробива данных
+            <Badge variant="outline" className="border-primary/50 text-primary text-base px-4 py-2">
+              <Icon name="Sparkles" size={18} className="mr-2" />
+              Популярное: 3 месяца всего за 207₽!
             </Badge>
             <h1 className="text-5xl md:text-7xl font-bold gradient-text">
               AntiSherlok
@@ -175,7 +194,11 @@ const Index = () => {
             <p className="text-xl md:text-2xl text-muted-foreground max-w-3xl mx-auto">
               Уникальный бот для борьбы с недобросовестными пользователями
             </p>
-            <Button size="lg" className="gradient-primary text-white hover:opacity-90 transition-opacity animate-glow">
+            <Button 
+              size="lg" 
+              className="gradient-primary text-white hover:opacity-90 transition-opacity animate-glow"
+              onClick={() => window.open('https://t.me/antiSherlok_snosBot', '_blank')}
+            >
               <Icon name="Send" size={20} className="mr-2" />
               Открыть бота
             </Button>
@@ -237,7 +260,7 @@ const Index = () => {
               Выберите подходящий план защиты
             </p>
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-6xl mx-auto">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
             {subscriptionPlans.map((plan, index) => (
               <Card 
                 key={plan.name}
@@ -276,7 +299,7 @@ const Index = () => {
                         : 'border-primary/50 hover:bg-primary/10'
                     }`}
                     variant={plan.popular ? 'default' : 'outline'}
-                    onClick={() => handleSubscribe(plan.name, plan.price, plan.duration === 'месяц' ? 1 : plan.duration === '3 месяца' ? 3 : 6)}
+                    onClick={() => handleSubscribe(plan.name, plan.price, plan.durationMonths)}
                   >
                     <Icon name="CreditCard" size={18} className="mr-2" />
                     Подключить
