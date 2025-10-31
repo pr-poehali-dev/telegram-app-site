@@ -17,6 +17,14 @@ interface Subscription {
   date: string;
 }
 
+interface TelegramUser {
+  id: number;
+  first_name: string;
+  last_name?: string;
+  username?: string;
+  photo_url?: string;
+}
+
 type TabType = 'subscriptions' | 'purchases' | 'info';
 
 const Index = () => {
@@ -24,10 +32,18 @@ const Index = () => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [userSubscriptions, setUserSubscriptions] = useState<Subscription[]>([]);
   const [telegramId] = useState('123456789');
+  const [telegramUser, setTelegramUser] = useState<TelegramUser | null>(null);
   const [users, setUsers] = useState(0);
   const [efficiency, setEfficiency] = useState(0);
   const [activeTab, setActiveTab] = useState<TabType>('subscriptions');
   const { toast } = useToast();
+
+  useEffect(() => {
+    const tg = (window as any).Telegram?.WebApp;
+    if (tg?.initDataUnsafe?.user) {
+      setTelegramUser(tg.initDataUnsafe.user);
+    }
+  }, []);
 
   useEffect(() => {
     const animateCounter = (target: number, setter: (val: number) => void, duration: number = 2000) => {
@@ -234,6 +250,29 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
       <div className="container mx-auto px-4 py-8 space-y-6">
+        {telegramUser && (
+          <div className="flex items-center gap-4 p-4 rounded-2xl bg-gradient-to-br from-primary/10 via-background/80 to-secondary/10 backdrop-blur-xl border border-primary/20">
+            {telegramUser.photo_url ? (
+              <img 
+                src={telegramUser.photo_url} 
+                alt="Avatar" 
+                className="w-16 h-16 rounded-full border-2 border-primary/50"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-full bg-primary/20 border-2 border-primary/50 flex items-center justify-center">
+                <Icon name="User" size={32} className="text-primary" />
+              </div>
+            )}
+            <div className="flex-1">
+              <h2 className="text-xl font-bold text-foreground">
+                {telegramUser.first_name} {telegramUser.last_name || ''}
+              </h2>
+              {telegramUser.username && (
+                <p className="text-muted-foreground">@{telegramUser.username}</p>
+              )}
+            </div>
+          </div>
+        )}
         <section className="relative overflow-hidden py-12 px-6 rounded-3xl bg-gradient-to-br from-primary/20 via-background/80 to-secondary/20 backdrop-blur-xl border border-primary/20">
           <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10" />
           <div className="relative z-10 text-center space-y-6">
