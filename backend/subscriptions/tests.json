@@ -1,0 +1,33 @@
+{
+  "tests": [
+    {
+      "name": "Get subscriptions for user",
+      "method": "GET",
+      "path": "/?telegram_id=123456789",
+      "expectedStatus": 200,
+      "expectedBody": {
+        "subscriptions": []
+      },
+      "bodyMatcher": "partial"
+    },
+    {
+      "name": "Create new subscription",
+      "method": "POST",
+      "path": "/",
+      "body": {
+        "telegram_id": 123456789,
+        "plan_name": "1 месяц",
+        "price": "299₽",
+        "duration_months": 1,
+        "username": "testuser",
+        "first_name": "Test",
+        "last_name": "User"
+      },
+      "expectedStatus": 201,
+      "expectedBody": {
+        "success": true
+      },
+      "bodyMatcher": "partial"
+    }
+  ]
+}

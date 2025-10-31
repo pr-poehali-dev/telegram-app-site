@@ -2,18 +2,37 @@ import { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
+import { useToast } from '@/hooks/use-toast';
 import Icon from '@/components/ui/icon';
+import func2url from '../../backend/func2url.json';
+
+interface Subscription {
+  id: number;
+  plan: string;
+  price: string;
+  duration: number;
+  startDate: string;
+  endDate: string;
+  status: string;
+  date: string;
+}
 
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
+  const [userSubscriptions, setUserSubscriptions] = useState<Subscription[]>([]);
+  const [telegramId] = useState('123456789');
+  const { toast } = useToast();
 
   useEffect(() => {
     const interval = setInterval(() => {
       setLoadingProgress((prev) => {
         if (prev >= 100) {
           clearInterval(interval);
-          setTimeout(() => setIsLoading(false), 300);
+          setTimeout(() => {
+            setIsLoading(false);
+            loadSubscriptions();
+          }, 300);
           return 100;
         }
         return prev + 2;
@@ -22,6 +41,54 @@ const Index = () => {
 
     return () => clearInterval(interval);
   }, []);
+
+  const loadSubscriptions = async () => {
+    try {
+      const response = await fetch(
+        `${func2url.subscriptions}?telegram_id=${telegramId}`
+      );
+      const data = await response.json();
+      setUserSubscriptions(data.subscriptions || []);
+    } catch (error) {
+      console.error('Failed to load subscriptions:', error);
+    }
+  };
+
+  const handleSubscribe = async (planName: string, price: string, durationMonths: number) => {
+    try {
+      const response = await fetch(func2url.subscriptions, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          telegram_id: telegramId,
+          plan_name: planName,
+          price: price,
+          duration_months: durationMonths,
+          username: 'demo_user',
+          first_name: 'Demo',
+          last_name: 'User'
+        })
+      });
+      
+      const data = await response.json();
+      
+      if (data.success) {
+        toast({
+          title: 'Подписка активирована!',
+          description: `Подписка "${planName}" успешно оформлена`,
+        });
+        await loadSubscriptions();
+      }
+    } catch (error) {
+      toast({
+        title: 'Ошибка',
+        description: 'Не удалось оформить подписку',
+        variant: 'destructive'
+      });
+    }
+  };
 
   if (isLoading) {
     return (
@@ -88,10 +155,8 @@ const Index = () => {
     }
   ];
 
-  const recentPurchases = [
-    { id: 1, plan: 'Подписка 1 месяц', date: '25.10.2024', status: 'Активна' },
-    { id: 2, plan: 'Подписка 3 месяца', date: '15.09.2024', status: 'Истекла' },
-    { id: 3, plan: 'Подписка 1 месяц', date: '01.08.2024', status: 'Истекла' }
+  const displayPurchases = userSubscriptions.length > 0 ? userSubscriptions : [
+    { id: 1, plan: 'Нет активных подписок', date: '-', status: 'Нет данных' }
   ];
 
   return (
@@ -211,6 +276,7 @@ const Index = () => {
                         : 'border-primary/50 hover:bg-primary/10'
                     }`}
                     variant={plan.popular ? 'default' : 'outline'}
+                    onClick={() => handleSubscribe(plan.name, plan.price, plan.duration === 'месяц' ? 1 : plan.duration === '3 месяца' ? 3 : 6)}
                   >
                     <Icon name="CreditCard" size={18} className="mr-2" />
                     Подключить
@@ -233,22 +299,22 @@ const Index = () => {
           <Card className="border-primary/20">
             <CardContent className="p-6">
               <div className="space-y-4">
-                {recentPurchases.map((purchase) => (
+                {displayPurchases.map((purchase) => (
                   <div 
                     key={purchase.id}
                     className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
                   >
                     <div className="flex items-center gap-4">
                       <div className={`w-3 h-3 rounded-full ${
-                        purchase.status === 'Активна' ? 'bg-green-500' : 'bg-muted-foreground'
+                        purchase.status === 'active' || purchase.status === 'Активна' ? 'bg-green-500' : 'bg-muted-foreground'
                       }`} />
                       <div>
                         <div className="font-semibold">{purchase.plan}</div>
                         <div className="text-sm text-muted-foreground">{purchase.date}</div>
                       </div>
                     </div>
-                    <Badge variant={purchase.status === 'Активна' ? 'default' : 'secondary'}>
-                      {purchase.status}
+                    <Badge variant={purchase.status === 'active' || purchase.status === 'Активна' ? 'default' : 'secondary'}>
+                      {purchase.status === 'active' ? 'Активна' : purchase.status}
                     </Badge>
                   </div>
                 ))}
