@@ -22,9 +22,29 @@ const Index = () => {
   const [loadingProgress, setLoadingProgress] = useState(0);
   const [userSubscriptions, setUserSubscriptions] = useState<Subscription[]>([]);
   const [telegramId] = useState('123456789');
+  const [users, setUsers] = useState(0);
+  const [efficiency, setEfficiency] = useState(0);
   const { toast } = useToast();
 
   useEffect(() => {
+    const animateCounter = (target: number, setter: (val: number) => void, duration: number = 2000) => {
+      const start = 0;
+      const increment = target / (duration / 16);
+      let current = start;
+      
+      const timer = setInterval(() => {
+        current += increment;
+        if (current >= target) {
+          setter(target);
+          clearInterval(timer);
+        } else {
+          setter(Math.floor(current));
+        }
+      }, 16);
+      
+      return timer;
+    };
+
     const interval = setInterval(() => {
       setLoadingProgress((prev) => {
         if (prev >= 100) {
@@ -39,7 +59,14 @@ const Index = () => {
       });
     }, 30);
 
-    return () => clearInterval(interval);
+    const timer1 = setTimeout(() => animateCounter(150, setUsers), 500);
+    const timer2 = setTimeout(() => animateCounter(100, setEfficiency), 700);
+    
+    return () => {
+      clearInterval(interval);
+      clearTimeout(timer1);
+      clearTimeout(timer2);
+    };
   }, []);
 
   const loadSubscriptions = async () => {
@@ -233,12 +260,12 @@ const Index = () => {
               <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6">
                 <div className="text-center p-4 rounded-lg bg-primary/10">
                   <Icon name="Users" className="mx-auto mb-2 text-primary" size={32} />
-                  <div className="text-2xl font-bold">150+</div>
+                  <div className="text-2xl font-bold">{users}+</div>
                   <div className="text-sm">Защищённых пользователей</div>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-secondary/10">
                   <Icon name="ShieldCheck" className="mx-auto mb-2 text-secondary" size={32} />
-                  <div className="text-2xl font-bold">100%</div>
+                  <div className="text-2xl font-bold">{efficiency}%</div>
                   <div className="text-sm">Эффективность</div>
                 </div>
                 <div className="text-center p-4 rounded-lg bg-primary/10">
