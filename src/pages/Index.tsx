@@ -17,6 +17,8 @@ interface Subscription {
   date: string;
 }
 
+type TabType = 'subscriptions' | 'purchases' | 'info';
+
 const Index = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [loadingProgress, setLoadingProgress] = useState(0);
@@ -24,7 +26,7 @@ const Index = () => {
   const [telegramId] = useState('123456789');
   const [users, setUsers] = useState(0);
   const [efficiency, setEfficiency] = useState(0);
-  const [infoExpanded, setInfoExpanded] = useState(false);
+  const [activeTab, setActiveTab] = useState<TabType>('subscriptions');
   const { toast } = useToast();
 
   useEffect(() => {
@@ -227,12 +229,12 @@ const Index = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-background">
-      <section className="relative overflow-hidden py-20 px-4">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/20 via-background to-secondary/20" />
-        <div className="container mx-auto relative z-10">
-          <div className="text-center space-y-6 animate-fade-in">
-            <Badge variant="outline" className="border-primary/50 text-primary text-base px-4 py-2">
+    <div className="min-h-screen bg-gradient-to-br from-background via-primary/5 to-secondary/5">
+      <div className="container mx-auto px-4 py-8 space-y-6">
+        <section className="relative overflow-hidden py-12 px-6 rounded-3xl bg-gradient-to-br from-primary/20 via-background/80 to-secondary/20 backdrop-blur-xl border border-primary/20">
+          <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-transparent to-secondary/10" />
+          <div className="relative z-10 text-center space-y-6">
+            <Badge variant="outline" className="border-primary/50 text-primary text-base px-4 py-2 bg-background/50 backdrop-blur-sm">
               <Icon name="Sparkles" size={18} className="mr-2" />
               Популярное: 3 месяца всего за 207₽!
             </Badge>
@@ -251,191 +253,181 @@ const Index = () => {
               Открыть бота
             </Button>
           </div>
-        </div>
-      </section>
+        </section>
 
-      <section className="py-20 px-4 bg-card/50">
-        <div className="container mx-auto">
-          <div className="text-center space-y-4 mb-12">
-            <h2 className="text-4xl font-bold">О боте</h2>
-            <p className="text-muted-foreground max-w-2xl mx-auto">
-              Защитите свои данные от недобросовестных пользователей
-            </p>
+        <div className="flex gap-3 justify-center backdrop-blur-xl bg-background/30 rounded-2xl p-2 border border-primary/20 max-w-md mx-auto">
+          <button
+            onClick={() => setActiveTab('subscriptions')}
+            className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
+              activeTab === 'subscriptions'
+                ? 'bg-background/80 backdrop-blur-xl text-primary shadow-lg border border-primary/30'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Подписки
+          </button>
+          <button
+            onClick={() => setActiveTab('purchases')}
+            className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
+              activeTab === 'purchases'
+                ? 'bg-background/80 backdrop-blur-xl text-primary shadow-lg border border-primary/30'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Покупки
+          </button>
+          <button
+            onClick={() => setActiveTab('info')}
+            className={`flex-1 px-4 py-3 rounded-xl font-medium transition-all duration-300 ${
+              activeTab === 'info'
+                ? 'bg-background/80 backdrop-blur-xl text-primary shadow-lg border border-primary/30'
+                : 'text-muted-foreground hover:text-foreground'
+            }`}
+          >
+            Информация
+          </button>
+        </div>
+
+        {activeTab === 'subscriptions' && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center space-y-2">
+              <h2 className="text-3xl font-bold">Тарифные планы</h2>
+              <p className="text-muted-foreground">Выберите подходящий план защиты</p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
+              {subscriptionPlans.map((plan, index) => (
+                <Card 
+                  key={plan.name}
+                  className={`relative hover:scale-105 transition-transform duration-300 backdrop-blur-xl bg-card/80 ${
+                    plan.popular 
+                      ? 'border-primary shadow-lg shadow-primary/20 animate-glow' 
+                      : 'border-primary/20'
+                  }`}
+                  style={{ animationDelay: `${index * 0.1}s` }}
+                >
+                  {plan.popular && (
+                    <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 gradient-primary text-white">
+                      Популярный
+                    </Badge>
+                  )}
+                  <CardHeader>
+                    <CardTitle className="text-2xl">{plan.name}</CardTitle>
+                    <CardDescription>
+                      <span className="text-3xl font-bold text-foreground">{plan.price}</span>
+                      <span className="text-muted-foreground"> / {plan.duration}</span>
+                    </CardDescription>
+                  </CardHeader>
+                  <CardContent className="space-y-4">
+                    <ul className="space-y-3">
+                      {plan.features.map((feature) => (
+                        <li key={feature} className="flex items-start gap-2">
+                          <Icon name="CheckCircle2" className="text-primary flex-shrink-0 mt-0.5" size={18} />
+                          <span className="text-sm">{feature}</span>
+                        </li>
+                      ))}
+                    </ul>
+                    <Button 
+                      className={`w-full ${
+                        plan.popular 
+                          ? 'gradient-primary text-white' 
+                          : 'border-primary/50 hover:bg-primary/10'
+                      }`}
+                      variant={plan.popular ? 'default' : 'outline'}
+                      onClick={() => handleSubscribe(plan.name, plan.price, plan.durationMonths)}
+                    >
+                      Выбрать план
+                    </Button>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
           </div>
-          <Card className="max-w-4xl mx-auto border-primary/20 bg-card/80 backdrop-blur animate-slide-up">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-3 text-2xl">
-                <Icon name="Info" className="text-primary" size={28} />
-                Что такое AntiSherlok?
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4 text-muted-foreground">
-              <div className="space-y-4">
+        )}
+
+        {activeTab === 'purchases' && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center space-y-2">
+              <h2 className="text-3xl font-bold">Мои покупки</h2>
+              <p className="text-muted-foreground">История ваших подписок</p>
+            </div>
+            <Card className="max-w-4xl mx-auto backdrop-blur-xl bg-card/80 border-primary/20">
+              <CardContent className="p-6">
+                <div className="space-y-4">
+                  {displayPurchases.map((purchase) => (
+                    <div 
+                      key={purchase.id} 
+                      className="flex items-center justify-between p-4 rounded-lg bg-background/50 border border-primary/10 hover:border-primary/30 transition-colors"
+                    >
+                      <div className="flex items-center gap-4">
+                        <div className="w-12 h-12 rounded-full bg-primary/20 flex items-center justify-center">
+                          <Icon name="Package" className="text-primary" size={24} />
+                        </div>
+                        <div>
+                          <p className="font-semibold">{purchase.plan}</p>
+                          <p className="text-sm text-muted-foreground">{purchase.date}</p>
+                        </div>
+                      </div>
+                      <Badge variant="outline" className="border-primary/50 text-primary">
+                        {purchase.status}
+                      </Badge>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+
+        {activeTab === 'info' && (
+          <div className="space-y-6 animate-fade-in">
+            <div className="text-center space-y-2">
+              <h2 className="text-3xl font-bold">О боте</h2>
+              <p className="text-muted-foreground">Защитите свои данные от недобросовестных пользователей</p>
+            </div>
+            <Card className="max-w-4xl mx-auto backdrop-blur-xl bg-card/80 border-primary/20">
+              <CardHeader>
+                <CardTitle className="flex items-center gap-3 text-2xl">
+                  <Icon name="Info" className="text-primary" size={28} />
+                  Что такое AntiSherlok?
+                </CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6 text-muted-foreground">
                 <p>
                   AntiSherlok — это уникальный бот, разработанный для борьбы с недобросовестными пользователями, 
                   которые используют пробив ботов, такие как Шерлок, для получения личной информации о других людях.
                 </p>
+                <p>
+                  Основная задача AntiSherlok-а — выявление и блокировка таких пользователей, а также защита 
+                  конфиденциальности и безопасности данных.
+                </p>
+                <p>
+                  Бот использует передовые алгоритмы машинного обучения для анализа поведенческих паттернов 
+                  и выявления подозрительной активности в режиме реального времени. Система автоматически 
+                  обнаруживает попытки несанкционированного доступа и немедленно блокирует угрозы.
+                </p>
                 
-                <div 
-                  className={`overflow-hidden transition-all duration-500 ease-in-out ${
-                    infoExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
-                  }`}
-                >
-                  <p>
-                    Основная задача AntiSherlok-а — выявление и блокировка таких пользователей, а также защита 
-                    конфиденциальности и безопасности данных.
-                  </p>
-                  <p className="mt-4">
-                    Бот использует передовые алгоритмы машинного обучения для анализа поведенческих паттернов 
-                    и выявления подозрительной активности в режиме реального времени. Система автоматически 
-                    обнаруживает попытки несанкционированного доступа и немедленно блокирует угрозы.
-                  </p>
-                </div>
-                
-                <Button 
-                  variant="ghost" 
-                  size="sm" 
-                  onClick={() => setInfoExpanded(!infoExpanded)}
-                  className="w-full mt-4 text-primary hover:text-primary/80 hover:bg-primary/10"
-                >
-                  {infoExpanded ? (
-                    <>
-                      <Icon name="ChevronUp" size={20} className="mr-2" />
-                      Свернуть
-                    </>
-                  ) : (
-                    <>
-                      <Icon name="ChevronDown" size={20} className="mr-2" />
-                      Читать далее
-                    </>
-                  )}
-                </Button>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
-                <div className="text-center p-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 cursor-default">
-                  <Icon name="Users" className="mx-auto mb-2 text-primary" size={32} />
-                  <div className="text-2xl font-bold">{users}+</div>
-                  <div className="text-sm">Защищённых пользователей</div>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-all duration-300 hover:shadow-lg hover:shadow-secondary/30 hover:scale-105 cursor-default">
-                  <Icon name="ShieldCheck" className="mx-auto mb-2 text-secondary" size={32} />
-                  <div className="text-2xl font-bold">{efficiency}%</div>
-                  <div className="text-sm">Эффективность</div>
-                </div>
-                <div className="text-center p-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 cursor-default">
-                  <Icon name="Clock" className="mx-auto mb-2 text-primary" size={32} />
-                  <div className="text-2xl font-bold">24/7</div>
-                  <div className="text-sm">Мониторинг</div>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      <section className="py-20 px-4">
-        <div className="container mx-auto">
-          <div className="text-center space-y-4 mb-12">
-            <h2 className="text-4xl font-bold">Тарифные планы</h2>
-            <p className="text-muted-foreground">
-              Выберите подходящий план защиты
-            </p>
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 max-w-7xl mx-auto">
-            {subscriptionPlans.map((plan, index) => (
-              <Card 
-                key={plan.name}
-                className={`relative hover:scale-105 transition-transform duration-300 ${
-                  plan.popular 
-                    ? 'border-primary shadow-lg shadow-primary/20 animate-glow' 
-                    : 'border-primary/20'
-                }`}
-                style={{ animationDelay: `${index * 0.1}s` }}
-              >
-                {plan.popular && (
-                  <Badge className="absolute -top-3 left-1/2 transform -translate-x-1/2 gradient-primary text-white">
-                    Популярный
-                  </Badge>
-                )}
-                <CardHeader>
-                  <CardTitle className="text-2xl">{plan.name}</CardTitle>
-                  <CardDescription>
-                    <span className="text-3xl font-bold text-foreground">{plan.price}</span>
-                    <span className="text-muted-foreground"> / {plan.duration}</span>
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <ul className="space-y-3">
-                    {plan.features.map((feature) => (
-                      <li key={feature} className="flex items-start gap-2">
-                        <Icon name="CheckCircle2" className="text-primary flex-shrink-0 mt-0.5" size={18} />
-                        <span className="text-sm">{feature}</span>
-                      </li>
-                    ))}
-                  </ul>
-                  <Button 
-                    className={`w-full ${
-                      plan.popular 
-                        ? 'gradient-primary text-white hover:opacity-90' 
-                        : 'border-primary/50 hover:bg-primary/10'
-                    }`}
-                    variant={plan.popular ? 'default' : 'outline'}
-                    onClick={() => handleSubscribe(plan.name, plan.price, plan.durationMonths)}
-                  >
-                    <Icon name="CreditCard" size={18} className="mr-2" />
-                    Подключить
-                  </Button>
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      <section className="py-20 px-4 bg-card/50">
-        <div className="container mx-auto max-w-4xl">
-          <div className="text-center space-y-4 mb-12">
-            <h2 className="text-4xl font-bold">История покупок</h2>
-            <p className="text-muted-foreground">
-              Ваши активные и прошлые подписки
-            </p>
-          </div>
-          <Card className="border-primary/20">
-            <CardContent className="p-6">
-              <div className="space-y-4">
-                {displayPurchases.map((purchase) => (
-                  <div 
-                    key={purchase.id}
-                    className="flex items-center justify-between p-4 rounded-lg bg-muted/30 hover:bg-muted/50 transition-colors"
-                  >
-                    <div className="flex items-center gap-4">
-                      <div className={`w-3 h-3 rounded-full ${
-                        purchase.status === 'active' || purchase.status === 'Активна' ? 'bg-green-500' : 'bg-muted-foreground'
-                      }`} />
-                      <div>
-                        <div className="font-semibold">{purchase.plan}</div>
-                        <div className="text-sm text-muted-foreground">{purchase.date}</div>
-                      </div>
-                    </div>
-                    <Badge variant={purchase.status === 'active' || purchase.status === 'Активна' ? 'default' : 'secondary'}>
-                      {purchase.status === 'active' ? 'Активна' : purchase.status}
-                    </Badge>
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
+                  <div className="text-center p-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 cursor-default">
+                    <Icon name="Users" className="mx-auto mb-2 text-primary" size={32} />
+                    <div className="text-2xl font-bold">{users}+</div>
+                    <div className="text-sm">Защищённых пользователей</div>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        </div>
-      </section>
-
-      <footer className="py-12 px-4 border-t border-border">
-        <div className="container mx-auto text-center text-muted-foreground">
-          <p className="flex items-center justify-center gap-2">
-            <Icon name="Shield" className="text-primary" size={20} />
-            © 2024 AntiSherlok. Защита ваших данных — наш приоритет
-          </p>
-        </div>
-      </footer>
+                  <div className="text-center p-4 rounded-lg bg-secondary/10 hover:bg-secondary/20 transition-all duration-300 hover:shadow-lg hover:shadow-secondary/30 hover:scale-105 cursor-default">
+                    <Icon name="ShieldCheck" className="mx-auto mb-2 text-secondary" size={32} />
+                    <div className="text-2xl font-bold">{efficiency}%</div>
+                    <div className="text-sm">Эффективность</div>
+                  </div>
+                  <div className="text-center p-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 cursor-default">
+                    <Icon name="Clock" className="mx-auto mb-2 text-primary" size={32} />
+                    <div className="text-2xl font-bold">24/7</div>
+                    <div className="text-sm">Мониторинг</div>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        )}
+      </div>
     </div>
   );
 };
