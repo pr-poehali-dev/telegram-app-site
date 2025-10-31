@@ -257,8 +257,8 @@ const Index = () => {
                 window.open('https://t.me/antiSherlok_snosBot', '_blank');
               }}
             >
-              <Icon name="Send" size={20} className="mr-2" />
-              Открыть бота
+              <Icon name="ArrowLeft" size={20} className="mr-2" />
+              Вернуться в бота
             </Button>
           </div>
         </section>
