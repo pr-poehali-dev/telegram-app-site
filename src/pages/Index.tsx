@@ -24,6 +24,7 @@ const Index = () => {
   const [telegramId] = useState('123456789');
   const [users, setUsers] = useState(0);
   const [efficiency, setEfficiency] = useState(0);
+  const [infoExpanded, setInfoExpanded] = useState(false);
   const { toast } = useToast();
 
   useEffect(() => {
@@ -269,15 +270,48 @@ const Index = () => {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4 text-muted-foreground">
-              <p>
-                AntiSherlok — это уникальный бот, разработанный для борьбы с недобросовестными пользователями, 
-                которые используют пробив ботов, такие как Шерлок, для получения личной информации о других людях.
-              </p>
-              <p>
-                Основная задача AntiSherlok-а — выявление и блокировка таких пользователей, а также защита 
-                конфиденциальности и безопасности данных.
-              </p>
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-6">
+              <div className="space-y-4">
+                <p>
+                  AntiSherlok — это уникальный бот, разработанный для борьбы с недобросовестными пользователями, 
+                  которые используют пробив ботов, такие как Шерлок, для получения личной информации о других людях.
+                </p>
+                
+                <div 
+                  className={`overflow-hidden transition-all duration-500 ease-in-out ${
+                    infoExpanded ? 'max-h-96 opacity-100' : 'max-h-0 opacity-0'
+                  }`}
+                >
+                  <p>
+                    Основная задача AntiSherlok-а — выявление и блокировка таких пользователей, а также защита 
+                    конфиденциальности и безопасности данных.
+                  </p>
+                  <p className="mt-4">
+                    Бот использует передовые алгоритмы машинного обучения для анализа поведенческих паттернов 
+                    и выявления подозрительной активности в режиме реального времени. Система автоматически 
+                    обнаруживает попытки несанкционированного доступа и немедленно блокирует угрозы.
+                  </p>
+                </div>
+                
+                <Button 
+                  variant="ghost" 
+                  size="sm" 
+                  onClick={() => setInfoExpanded(!infoExpanded)}
+                  className="w-full mt-4 text-primary hover:text-primary/80 hover:bg-primary/10"
+                >
+                  {infoExpanded ? (
+                    <>
+                      <Icon name="ChevronUp" size={20} className="mr-2" />
+                      Свернуть
+                    </>
+                  ) : (
+                    <>
+                      <Icon name="ChevronDown" size={20} className="mr-2" />
+                      Читать далее
+                    </>
+                  )}
+                </Button>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pt-4">
                 <div className="text-center p-4 rounded-lg bg-primary/10 hover:bg-primary/20 transition-all duration-300 hover:shadow-lg hover:shadow-primary/30 hover:scale-105 cursor-default">
                   <Icon name="Users" className="mx-auto mb-2 text-primary" size={32} />
                   <div className="text-2xl font-bold">{users}+</div>
